@@ -82,13 +82,11 @@ public class LotterySystem {
             teamNameField.setText("");
             teamBallsField.setText("");
         });
-        addTeamButton.setBackground(Color.CYAN);
 
         viewScheduleButton = new JButton("View Schedule");
         viewScheduleButton.addActionListener(e -> {
             scheduleScreen = new ScheduleScreen(weeks,divisions);
         });
-        viewScheduleButton.setBackground(Color.CYAN);
         viewScheduleButton.setEnabled(false);
 
         JButton deleteTeamButton = new JButton("Delete Team");
@@ -96,11 +94,9 @@ public class LotterySystem {
             deleteTeam(teamNameField.getText());
             teamNameField.setText("");
         });
-        deleteTeamButton.setBackground(Color.CYAN);
 
         performLotteryButton = new JButton("Perform Lottery");
         performLotteryButton.addActionListener(e -> performLottery());
-        performLotteryButton.setBackground(Color.CYAN);
 
         percentChanceList = new JList<>();
         percentChanceList.addListSelectionListener(e -> {
@@ -116,10 +112,9 @@ public class LotterySystem {
 
         nextPickButton = new JButton("Show Next Pick");
         nextPickButton.addActionListener(e -> showNextPick());
-        nextPickButton.setBackground(Color.CYAN);
         nextPickButton.setEnabled(false);
 
-        resultArea = new JTextArea(19, 14);
+        resultArea = new JTextArea(teams.size()+5, 14);
         resultArea.setEditable(false);
         resultArea.setBackground(new Color(255,255,204));
 
@@ -127,11 +122,11 @@ public class LotterySystem {
         teamListArea.setEditable(false);
         teamListArea.setBackground(new Color(255,255,204));
 
-        percentChanceArea = new JTextArea(19, 15);
+        percentChanceArea = new JTextArea(teams.size()+5, 15);
         percentChanceArea.setEditable(false);
         percentChanceArea.setBackground(new Color(255,255,204));
 
-        additionalArea = new JTextArea(19, 15);
+        additionalArea = new JTextArea(teams.size()+5, 15);
         additionalArea.setEditable(false);
         additionalArea.setBackground(new Color(255,255,204));
 
@@ -139,9 +134,9 @@ public class LotterySystem {
         panel.setBackground(Color.LIGHT_GRAY);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(1, 1, 1, 1);
-        gbc.weightx = 1;  // add this line
+        gbc.weightx = 1;
 
-        divisionArea = new JTextArea(19, 15);
+        divisionArea = new JTextArea(teams.size()+5, 15);
         divisionArea.setEditable(false);
         divisionArea.setBackground(Color.ORANGE);
 
@@ -180,8 +175,8 @@ public class LotterySystem {
         panel.add(new JScrollPane(resultArea), gbc);
 
         percentChanceList.setPrototypeCellValue(String.format("%1$-65s", ""));
-        percentChanceList.setVisibleRowCount(16); // This should be adjusted based on your needs
-        percentChanceList.setFixedCellHeight(19); // This should be adjusted based on your needs
+        percentChanceList.setVisibleRowCount(teams.size()); // This should be adjusted based on your needs
+        percentChanceList.setFixedCellHeight(teams.size()); // This should be adjusted based on your needs
         JScrollPane percentChanceScrollPane = new JScrollPane(percentChanceList);
         percentChanceScrollPane.getViewport().setBackground(Color.ORANGE);
         gbc.gridx = 2;
