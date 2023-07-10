@@ -4,59 +4,48 @@ import com.google.gson.reflect.TypeToken;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.List;
 
 public class LotterySystem {
-    private static final boolean SHOW_PERCENTAGES = true;
     private static final String JSON_FILE = "teams.json";
     private ScheduleScreen scheduleScreen;
-    private List<Team> teams;
-    private ArrayList<Team> sortedTeams;
-    private List<Team> revealedTeams;
+    private final List<Team> teams;
+    private final List<Team> revealedTeams;
     private List<Team> lotteryBalls;
     private List<Team> draftPicks;
     private int currentPick;
-    private int totalBalls;
-    private JFrame frame;
     private JTextField teamNameField;
     private JTextField teamBallsField;
     private JTextArea resultArea;
     private JTextArea teamListArea;
-    private JTextArea percentChanceArea;
     private boolean showPercentages;
     private JTextArea additionalArea;
     private JButton nextPickButton;
     private JButton performLotteryButton;
     private JButton viewScheduleButton;
     private JList<String> percentChanceList;
-    private JTextArea divisionArea;
-    private JPanel divisionPanel;
     private ArrayList<ArrayList<Team>> divisions;
     private JTextArea[] divisionAreas;
     private JLabel[] divisionLabels;
-    private ArrayList<Week> weeks;
+    private final ArrayList<Week> weeks;
     Font customFont;
     Font customFont2;
 
 
     public LotterySystem() throws IOException, FontFormatException {
         teams = loadTeams();
-        revealedTeams = new ArrayList<Team>();
+        revealedTeams = new ArrayList<>();
         customFont = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("font.ttf"))).deriveFont(20f);
         customFont2 = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(getClass().getResourceAsStream("casino.ttf"))).deriveFont(16f);
         weeks = new ArrayList<>();
         createAndShowGUI();
     }
     private void createAndShowGUI() {
-        frame = new JFrame("Fantasy Football Draft Lottery");
+        JFrame frame = new JFrame("Fantasy Football Draft Lottery");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1500, 1000);
         frame.getContentPane().setBackground(Color.LIGHT_GRAY);
@@ -80,15 +69,13 @@ public class LotterySystem {
 
         JButton addTeamButton = new JButton("Add Team");
         addTeamButton.addActionListener(e -> {
-            addTeam(teamNameField.getText(), Integer.parseInt(teamBallsField.getText()), 0, 0);
+            addTeam(teamNameField.getText(), Integer.parseInt(teamBallsField.getText()));
             teamNameField.setText("");
             teamBallsField.setText("");
         });
 
         viewScheduleButton = new JButton("View Schedule");
-        viewScheduleButton.addActionListener(e -> {
-            scheduleScreen = new ScheduleScreen(weeks,divisions);
-        });
+        viewScheduleButton.addActionListener(e -> scheduleScreen = new ScheduleScreen(weeks,divisions));
         viewScheduleButton.setEnabled(false);
 
         JButton deleteTeamButton = new JButton("Delete Team");
@@ -129,7 +116,7 @@ public class LotterySystem {
         teamListArea.setEditable(false);
         teamListArea.setBackground(new Color(255,255,204));
 
-        percentChanceArea = new JTextArea(teams.size()+extra, 15);
+        JTextArea percentChanceArea = new JTextArea(teams.size() + extra, 15);
         percentChanceArea.setEditable(false);
         percentChanceArea.setBackground(new Color(255,255,204));
 
@@ -143,7 +130,7 @@ public class LotterySystem {
         gbc.insets = new Insets(1, 1, 1, 1);
         gbc.weightx = 1;
 
-        divisionArea = new JTextArea(teams.size()+extra, 15);
+        JTextArea divisionArea = new JTextArea(teams.size() + extra, 15);
         divisionArea.setEditable(false);
         divisionArea.setBackground(Color.ORANGE);
 
@@ -213,7 +200,7 @@ public class LotterySystem {
         int divisionColumns = 2; // We always want 2 columns of divisions
         int divisionRows = teams.size() == 16 ? 2 : 3; // Number of rows depends on the number of divisions
 
-        divisionPanel = new JPanel(new GridLayout(divisionRows, divisionColumns)); // Set the layout to a grid
+        JPanel divisionPanel = new JPanel(new GridLayout(divisionRows, divisionColumns)); // Set the layout to a grid
         divisionPanel.setBackground(Color.LIGHT_GRAY);
 
         ArrayList<Color> colors = new ArrayList<>();
@@ -247,10 +234,8 @@ public class LotterySystem {
         }
 
         gbc.gridx = 6;
-        gbc.gridy = 3;
         gbc.gridheight = 2; // to span the height of two rows
         gbc.gridy = 4;
-        gbc.gridheight = 2; // to span the height of two rows
         panel.add(divisionPanel, gbc);
 
         // Add the button to your panel
@@ -343,8 +328,8 @@ public class LotterySystem {
         }
     }
 
-    private void addTeam(String name, int balls, int wins, int losses) {
-        Team team = new Team(name, balls, wins, losses);
+    private void addTeam(String name, int balls) {
+        Team team = new Team(name, balls, 0, 0);
         teams.add(team);
         saveTeams();
         showTeams();
@@ -363,12 +348,12 @@ public class LotterySystem {
     private void showDivisions() {
         ArrayList<Double> winsArray = new ArrayList<>();
         ArrayList<Integer> takenRanks = new ArrayList<>();
-        for (int i = 0; i < divisions.size(); i++) {
+        for (ArrayList<Team> division : divisions) {
             double wins = 0;
             double losses = 0;
-            for (int j = 0; j < divisions.get(i).size(); j++) {
-                wins += divisions.get(i).get(j).wins;
-                losses += divisions.get(i).get(j).losses;
+            for (Team team : division) {
+                wins += team.wins;
+                losses += team.losses;
             }
             if (wins + losses > 0)
                 winsArray.add((wins / (wins + losses)));
@@ -461,9 +446,9 @@ public class LotterySystem {
             Team winner = lotteryBalls.get(rand.nextInt(lotteryBalls.size()));
             draftPicks.add(winner);
             ArrayList<Team> newSet = new ArrayList<>();
-            for (int i = 0; i < lotteryBalls.size(); i++) {
-                if (!Objects.equals(lotteryBalls.get(i).name, winner.name)) {
-                    newSet.add(lotteryBalls.get(i));
+            for (Team lotteryBall : lotteryBalls) {
+                if (!Objects.equals(lotteryBall.name, winner.name)) {
+                    newSet.add(lotteryBall);
                 }
             }
             lotteryBalls = newSet;
@@ -477,7 +462,7 @@ public class LotterySystem {
 
     private void generateSchedule() {
 
-        int numWeeks = 14; // Assuming a 14-week regular season
+        int numWeeks = 14;
         int numTeamsPerDivision = teams.size() / divisions.size();
         int[][] teamSchedules = new int[teams.size()][14];
 
@@ -548,37 +533,45 @@ public class LotterySystem {
             };
         }
 
-        this.sortedTeams = new ArrayList<>();
+        ArrayList<Team> sortedTeams = new ArrayList<>();
+        ArrayList<ArrayList<Team>> originalDivisionOrder = new ArrayList<>();
+        for(ArrayList<Team> division : divisions) {
+            ArrayList<Team> newList = new ArrayList<>();
+            for(Team team : division){
+                newList.add(new Team(team.name,team.balls,team.wins,team.losses));
+            }
+            originalDivisionOrder.add(newList);
+        }
 
         Collections.shuffle(divisions);
-        for(int i = 0; i < divisions.size(); i++)
-            Collections.shuffle(divisions.get(i));
+        for (ArrayList<Team> division : divisions) Collections.shuffle(division);
 
         // Set schedules for all teams
         for(int i = 0; i < divisions.size(); i++){
             for(int j = 0; j < divisions.get(i).size(); j++){
                 divisions.get(i).get(j).setSchedule(teamSchedules[(i * numTeamsPerDivision) + j]);
-                this.sortedTeams.add(divisions.get(i).get(j));
+                sortedTeams.add(divisions.get(i).get(j));
             }
         }
 
         for (int i = 0; i < numWeeks; i++) {
             Week week = new Week(i+1);
             // Loop through all the teams
-            for(int j = 0; j < sortedTeams.size(); j++){
+            for (Team sortedTeam : sortedTeams) {
                 boolean shouldAdd = true;
-                for(int k = 0; k < week.getMatchups().size(); k++){
-                    if (week.getMatchups().get(k).contains(sortedTeams.get(j).name)) {
+                for (int k = 0; k < week.getMatchups().size(); k++) {
+                    if (week.getMatchups().get(k).contains(sortedTeam.name)) {
                         shouldAdd = false;
                         break;
                     }
                 }
-                if(shouldAdd)
-                    week.addMatchup(sortedTeams.get(j).name + " vs. " + sortedTeams.get(sortedTeams.get(j).schedule[i]-1).name);
+                if (shouldAdd)
+                    week.addMatchup(sortedTeam.name + " vs. " + sortedTeams.get(sortedTeam.schedule[i] - 1).name);
             }
             Collections.shuffle(week.getMatchups());
             weeks.add(week);
         }
+        divisions = originalDivisionOrder;
     }
 
     private void updatePercentChance() {
@@ -650,11 +643,9 @@ public class LotterySystem {
     }
     private void recreateLotteryBalls() {
         lotteryBalls = new ArrayList<>();
-        totalBalls = 0;
         for (Team team : teams) {
             for (int i = 0; i < team.balls; i++) {
                 lotteryBalls.add(team);
-                totalBalls++;
             }
         }
     }
