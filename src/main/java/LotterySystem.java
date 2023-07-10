@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.List;
 
 public class LotterySystem {
+    private static final boolean SHOW_PERCENTAGES = true;
     private static final String JSON_FILE = "teams.json";
     private ScheduleScreen scheduleScreen;
     private List<Team> teams;
@@ -30,6 +31,7 @@ public class LotterySystem {
     private JTextArea resultArea;
     private JTextArea teamListArea;
     private JTextArea percentChanceArea;
+    private boolean showPercentages;
     private JTextArea additionalArea;
     private JButton nextPickButton;
     private JButton performLotteryButton;
@@ -261,9 +263,20 @@ public class LotterySystem {
         gbc.anchor = GridBagConstraints.CENTER;
         panel.add(viewScheduleButton, gbc);
 
+        // Toggle button to show/hide percentages
+        JButton togglePercentagesButton = new JButton("Toggle Win Percentages");
+        togglePercentagesButton.addActionListener(e -> toggleShowPercentages());
+        gbc.gridy = 3; // Adjust the grid position for the togglePercentagesButton
+        panel.add(togglePercentagesButton, gbc);
+
         frame.getContentPane().add(panel, BorderLayout.CENTER);
         frame.setVisible(true);
         showTeams();
+    }
+
+    private void toggleShowPercentages() {
+        showPercentages = !showPercentages;
+        showDivisions();
     }
 
     private void showDetailedChances(String teamName) {
@@ -306,7 +319,7 @@ public class LotterySystem {
 
     private List<Team> loadTeams() {
         Gson gson = new Gson();
-        try (Reader reader = new InputStreamReader(getClass().getClassLoader().getResourceAsStream(JSON_FILE))) {
+        try (Reader reader = new InputStreamReader(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream(JSON_FILE)))) {
             return gson.fromJson(reader, new TypeToken<List<Team>>(){}.getType());
         } catch (IOException e) {
             e.printStackTrace();
@@ -316,7 +329,7 @@ public class LotterySystem {
 
     private void saveTeams() {
         Gson gson = new Gson();
-        try (Writer writer = new FileWriter(new File(getClass().getClassLoader().getResource(JSON_FILE).toURI()))) {
+        try (Writer writer = new FileWriter(new File(Objects.requireNonNull(getClass().getClassLoader().getResource(JSON_FILE)).toURI()))) {
             gson.toJson(teams, writer);
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
@@ -353,12 +366,12 @@ public class LotterySystem {
         for (int i = 0; i < divisions.size(); i++) {
             double wins = 0;
             double losses = 0;
-            for(int j = 0; j < divisions.get(i).size(); j++){
+            for (int j = 0; j < divisions.get(i).size(); j++) {
                 wins += divisions.get(i).get(j).wins;
                 losses += divisions.get(i).get(j).losses;
             }
-            if(wins+losses > 0)
-                winsArray.add((wins/(wins+losses)));
+            if (wins + losses > 0)
+                winsArray.add((wins / (wins + losses)));
         }
         Collections.sort(winsArray);
         Collections.reverse(winsArray);
@@ -367,27 +380,58 @@ public class LotterySystem {
             int wins = 0, losses = 0;
             divisionAreas[i].setText(""); // clear the text
             for (Team team : divisions.get(i)) {
-                divisionAreas[i].append(team.name + "\n");
+                String teamName = team.name;
+                if (showPercentages) {
+                    double combinedWinPercentage = getCombinedWinPercentage(divisions.get(i), team);
+                    if (combinedWinPercentage > 0) {
+                        teamName += " (" + combinedWinPercentage + "%)";
+                    }
+                }
+                divisionAreas[i].append(teamName + "\n");
                 wins += team.wins;
                 losses += team.losses;
             }
             int rank = 0;
-            double winPercentage = (double)wins/((double)wins+(double)losses);
-            for(int j = 0; j < winsArray.size(); j++){
-                if(compareDoubles(winsArray.get(j), winPercentage, 0.001) && !takenRanks.contains(j)){
+            double winPercentage = (double) wins / ((double) wins + (double) losses);
+            for (int j = 0; j < winsArray.size(); j++) {
+                if (compareDoubles(winsArray.get(j), winPercentage, 0.001) && !takenRanks.contains(j)) {
                     rank = j;
                     takenRanks.add(rank);
                     break;
                 }
             }
-            winPercentage = ((double)wins / ((double)wins+(double)losses))*100;
+            winPercentage = ((double) wins / ((double) wins + (double) losses)) * 100;
             DecimalFormat decimalFormat = new DecimalFormat("#.#");
             String formattedResult = decimalFormat.format(winPercentage);
-            if(wins+losses > 0)
-                //divisionLabels[i].setText("Division " + (i+1) + " ("+wins+"-"+losses+")");
-                divisionLabels[i].setText("Division " + (rank+1) + " ("+formattedResult+"%)");
-            else
-                divisionLabels[i].setText("Division X");
+            if(showPercentages) {
+                if (wins + losses > 0)
+                    divisionLabels[i].setText("Division " + (rank + 1) + " (" + formattedResult + "%)");
+                else
+                    divisionLabels[i].setText("Division X");
+            }
+            else{
+                if (wins + losses > 0)
+                    divisionLabels[i].setText("Division " + (rank + 1));
+                else
+                    divisionLabels[i].setText("Division X");
+            }
+        }
+    }
+
+    private double getCombinedWinPercentage(ArrayList<Team> division, Team excludeTeam) {
+        int wins = 0;
+        int losses = 0;
+        for (Team team : division) {
+            if (team != excludeTeam) { // Exclude the current team
+                wins += team.wins;
+                losses += team.losses;
+            }
+        }
+        if (wins + losses > 0) {
+            double winPercentage = (double) wins / ((double) wins + (double) losses) * 100;
+            return Double.parseDouble(new DecimalFormat("#.#").format(winPercentage));
+        } else {
+            return 0.0;
         }
     }
 
@@ -534,16 +578,6 @@ public class LotterySystem {
             }
             Collections.shuffle(week.getMatchups());
             weeks.add(week);
-        }
-    }
-
-    private void printSchedule() {
-        for (Week week : weeks) {
-            System.out.println("Week " + week.getNumber() + ":");
-            for (String matchup : week.getMatchups()) {
-                System.out.println(matchup);
-            }
-            System.out.println();
         }
     }
 
