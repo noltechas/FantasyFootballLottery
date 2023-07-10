@@ -114,7 +114,12 @@ public class LotterySystem {
         nextPickButton.addActionListener(e -> showNextPick());
         nextPickButton.setEnabled(false);
 
-        resultArea = new JTextArea(teams.size()+5, 14);
+        int extra = 6;
+        if(teams.size() == 18)
+            extra = 3;
+        else if(teams.size() == 16)
+            extra = 1;
+        resultArea = new JTextArea(teams.size()+extra, 14);
         resultArea.setEditable(false);
         resultArea.setBackground(new Color(255,255,204));
 
@@ -122,11 +127,11 @@ public class LotterySystem {
         teamListArea.setEditable(false);
         teamListArea.setBackground(new Color(255,255,204));
 
-        percentChanceArea = new JTextArea(teams.size()+5, 15);
+        percentChanceArea = new JTextArea(teams.size()+extra, 15);
         percentChanceArea.setEditable(false);
         percentChanceArea.setBackground(new Color(255,255,204));
 
-        additionalArea = new JTextArea(teams.size()+5, 15);
+        additionalArea = new JTextArea(teams.size()+extra, 15);
         additionalArea.setEditable(false);
         additionalArea.setBackground(new Color(255,255,204));
 
@@ -136,7 +141,7 @@ public class LotterySystem {
         gbc.insets = new Insets(1, 1, 1, 1);
         gbc.weightx = 1;
 
-        divisionArea = new JTextArea(teams.size()+5, 15);
+        divisionArea = new JTextArea(teams.size()+extra, 15);
         divisionArea.setEditable(false);
         divisionArea.setBackground(Color.ORANGE);
 
@@ -176,7 +181,7 @@ public class LotterySystem {
 
         percentChanceList.setPrototypeCellValue(String.format("%1$-65s", ""));
         percentChanceList.setVisibleRowCount(teams.size()); // This should be adjusted based on your needs
-        percentChanceList.setFixedCellHeight(teams.size()); // This should be adjusted based on your needs
+        percentChanceList.setFixedCellHeight(teams.size()+1); // This should be adjusted based on your needs
         JScrollPane percentChanceScrollPane = new JScrollPane(percentChanceList);
         percentChanceScrollPane.getViewport().setBackground(Color.ORANGE);
         gbc.gridx = 2;

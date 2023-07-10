@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class ScheduleScreen extends JFrame {
@@ -15,6 +17,32 @@ public class ScheduleScreen extends JFrame {
         setSize(1500, 1000);
         setLocationRelativeTo(null); // Center the frame on the screen
 
+        Font customFont;
+        try {
+            customFont = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/Jerseyletters-lP5V.ttf")).deriveFont(Font.PLAIN, 20);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            // Handle font loading error
+            customFont = new Font("SansSerif", Font.PLAIN, 12); // Fallback font
+        }
+
+        Font customFont2;
+        try {
+            customFont2 = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/PaladinsGradient-R6VW.otf")).deriveFont(Font.PLAIN, 11);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            // Handle font loading error
+            customFont2 = new Font("SansSerif", Font.PLAIN, 12); // Fallback font
+        }
+
+        Font customFont3;
+        try {
+            customFont3 = Font.createFont(Font.TRUETYPE_FONT, new File("src/main/resources/PaladinsCondensed-rB77.otf")).deriveFont(Font.PLAIN, 13);
+        } catch (FontFormatException | IOException e) {
+            e.printStackTrace();
+            // Handle font loading error
+            customFont3 = new Font("SansSerif", Font.PLAIN, 12); // Fallback font
+        }
 
         JPanel mainPanel = new JPanel(new GridLayout(NUM_ROWS, NUM_COLUMNS));
 
@@ -24,26 +52,26 @@ public class ScheduleScreen extends JFrame {
 
             String weekLabelText = "Week " + week.getNumber();
             if (week.getNumber() == HIGHLIGHT_WEEK_1 || week.getNumber() == HIGHLIGHT_WEEK_2)
-                weekLabelText += " (All-Star Week)";
-            if(week.getNumber() == 8 && divisions.size() ==6)
-                weekLabelText += " (All-Star Week)";
+                weekLabelText = "All-Star Week";
+            if(week.getNumber() == 8 && divisions.size() == 6)
+                weekLabelText = "All-Star Week";
 
             JLabel weekLabel = new JLabel(weekLabelText);
             weekLabel.setFont(weekLabel.getFont().deriveFont(Font.BOLD));
             weekLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center the text horizontally
+            weekLabel.setFont(customFont);
 
             weekPanel.add(weekLabel);
 
             for (String matchup : week.getMatchups()) {
                 JLabel matchupLabel = new JLabel(matchup);
                 matchupLabel.setHorizontalAlignment(SwingConstants.CENTER); // Center the text horizontally
+                matchupLabel.setFont(customFont2);
 
                 String[] teams = matchup.split(" vs. ");
                 if (teams.length == 2 && areInSameDivision(teams[0], teams[1], divisions)) {
-                    Font font = matchupLabel.getFont();
-                    Font underlineFont = font.deriveFont(font.getStyle());
+                    Font underlineFont = customFont3.deriveFont(customFont3.getStyle());
                     matchupLabel.setFont(underlineFont);
-                    matchupLabel.setText("<html><u>" + matchupLabel.getText() + "</u></html>");
                 }
 
                 weekPanel.add(matchupLabel);

@@ -1,122 +1,122 @@
 [
   {
     "name": "Brandon",
-    "balls": 6,
-    "wins": 22,
+    "balls": 8,
+    "wins": 24,
     "losses": 6
   },
   {
     "name": "Chas",
-    "balls": 7,
+    "balls": 12,
     "wins": 21,
     "losses": 7
   },
   {
+    "name": "Grant S",
+    "balls": 14,
+    "wins": 18,
+    "losses": 11
+  },
+  {
+    "name": "Ian",
+    "balls": 15,
+    "wins": 17,
+    "losses": 14
+  },
+  {
     "name": "Caden",
-    "balls": 11,
+    "balls": 17,
     "wins": 17,
     "losses": 11
   },
   {
-    "name": "Grant S",
-    "balls": 11,
-    "wins": 17,
-    "losses": 11
+    "name": "Alex",
+    "balls": 18,
+    "wins": 15,
+    "losses": 14
   },
   {
     "name": "Owen",
-    "balls": 13,
+    "balls": 20,
     "wins": 15,
     "losses": 13
   },
   {
-    "name": "Ian",
-    "balls": 14,
-    "wins": 14,
-    "losses": 14
-  },
-  {
     "name": "Amir",
-    "balls": 14,
+    "balls": 22,
     "wins": 14,
     "losses": 14
   },
   {
-    "name": "Freshman 1",
-    "balls": 14,
+    "name": "Alec",
+    "balls": 22,
     "wins": 14,
     "losses": 14
   },
   {
-    "name": "Freshman 2",
-    "balls": 14,
+    "name": "Mason",
+    "balls": 22,
     "wins": 14,
     "losses": 14
   },
   {
-    "name": "Jace",
-    "balls": 14,
+    "name": "AJ",
+    "balls": 22,
     "wins": 14,
     "losses": 14
   },
   {
     "name": "Ryan",
-    "balls": 14,
-    "wins": 14,
-    "losses": 14
-  },
-  {
-    "name": "Alex",
-    "balls": 14,
+    "balls": 22,
     "wins": 14,
     "losses": 14
   },
   {
     "name": "Hadley",
-    "balls": 14,
+    "balls": 22,
     "wins": 14,
     "losses": 14
   },
   {
     "name": "Grant W",
-    "balls": 14,
+    "balls": 23,
     "wins": 14,
     "losses": 14
   },
   {
     "name": "David",
-    "balls": 14,
+    "balls": 24,
     "wins": 14,
     "losses": 14
   },
   {
     "name": "Logan",
-    "balls": 15,
+    "balls": 26,
     "wins": 13,
     "losses": 15
   },
   {
     "name": "Kyle",
-    "balls": 16,
+    "balls": 28,
     "wins": 12,
     "losses": 16
   },
   {
     "name": "Michael",
-    "balls": 17,
+    "balls": 30,
     "wins": 11,
     "losses": 17
   },
   {
     "name": "Davion",
-    "balls": 20,
+    "balls": 35,
     "wins": 8,
     "losses": 20
   },
   {
     "name": "Cort",
-    "balls": 20,
+    "balls": 36,
     "wins": 8,
-    "losses": 20
+    "losses": 21
   }
 ]
